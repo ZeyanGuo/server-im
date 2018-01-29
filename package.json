@@ -14,5 +14,9 @@
   "license": "ISC",
   "dependencies": {
     "express": "^4.16.2"
+  },
+  "devDependencies": {
+    "assert": "^1.4.1",
+    "webpack": "^3.10.0"
   }
 }
