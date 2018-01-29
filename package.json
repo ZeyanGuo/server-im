@@ -1,6 +1,6 @@
 {
   "name": "server-im",
-  "version": "0.0.2",
+  "version": "0.0.4",
   "description": "The server for server-im",
   "main": "index.js",
   "scripts": {

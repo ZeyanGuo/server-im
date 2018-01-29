@@ -4,7 +4,7 @@
 const childProcess = require('child_process');
 const assert = require('assert');
 
-const prefix = '\x1B[40m\x1B[37mserver-im\x1B[39m\x1B[49m';
+const prefix = '\x1B[40m\x1B[37mserver-im\x1B[39m\x1B[49m ';
 const args = process.argv.slice(2);
 const argsIndex = args.findIndex(
 	x=>x==='build'|| x === 'test'|| x==='start'
@@ -18,13 +18,15 @@ switch(method){
 	case 'test':{
 		//invoke method by child process
 		let exec = childProcess.exec('node '+__dirname+'/../server/script/'+method,(err)=>{
-			assert.equal(err,null);
+			if(err){
+				console.log(prefix+err);
+			}
 		});
 		exec.stdout.on('data',(data)=>{
-			console.log(data);
+			console.log(prefix + data);
 		});
 	} break;
 	default:{
-		console.log(prefix + '\x1B[31m unkonwn method '+ method + '.\x1B[39m');
+		console.log(prefix + '\x1B[31munkonwn method '+ method + '.\x1B[39m');
 	}
 }
