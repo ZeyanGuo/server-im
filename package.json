@@ -1,0 +1,18 @@
+{
+  "name": "server-im",
+  "version": "0.0.1",
+  "description": "The server for server-im",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "bin": {
+    "server-im": "./bin/server-im.js"
+  },
+  "author": "guoze",
+  "email": "403476891@qq.com",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.16.2"
+  }
+}
