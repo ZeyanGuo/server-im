@@ -1,19 +1,14 @@
-const webpack = require('webpack');
 const env = require('../../config/env');
+const util = require('../util/util');
 
-const execWebpack = (file)=>{
-	webpack(file);
-}
-
-//choose different webpack.config.js to excute
 switch(env.NODE_ENV){
 	case "PRODUCTION":{
 		const proConfig = require('../../config/webpack.config.pro');
-		execWebpack(proConfig);
+		util.execWebpack(proConfig);
 	} break;
 	case "DEVLOPMENT":{
 		const devConfig = require('../../config/webpack.config.dev');
-		execWebpack(devConfig);
+		util.execWebpack(devConfig);
 	} break;
 }
 
