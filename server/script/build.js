@@ -1,14 +1,19 @@
 const env = require('../../config/env');
 const util = require('../util/util');
 
-switch(env.NODE_ENV){
-	case "PRODUCTION":{
-		const proConfig = require('../../config/webpack.config.pro');
-		util.execWebpack(proConfig);
-	} break;
-	case "DEVLOPMENT":{
-		const devConfig = require('../../config/webpack.config.dev');
-		util.execWebpack(devConfig);
-	} break;
+//do not provide build function in devlopment version.
+if(env.NODE_ENV === 'DEVLOPMENT'){
+	console.log(util.errMessage(
+		'Sorry can not build project in devlopment version, '
+		+'you can change the version in server-im/config/env.js.'
+		)
+	);
+}
+else if(env.NODE_ENV === 'PRODUCTION'){
+	const proConfig = require('../../config/webpack.config.pro');
+	util.execWebpack(proConfig);
+}
+else{
+	console.log(util.errMessage('Error verision, only support DEVLOPMENT and PRODUCTION.'));
 }
 

@@ -15,6 +15,7 @@ const method = argsIndex===-1?args[0]:args[argsIndex];
 switch(method){
 	case 'build':
 	case 'start':
+	case 'dev':
 	case 'test':{
 		//invoke method by child process
 		let exec = childProcess.exec('node '+__dirname+'/../server/script/'+method,(err)=>{

@@ -21,13 +21,25 @@ module.exports.execWebpack = (file) => {
 	});
 }
 
-//log the error message with format.
-module.exports.errMessage = (text) => {
+const errMessage = (text) => {
 	return consoleStyle.yellowBG[0]
 	+consoleStyle.red[0]
 	+'Error'
 	+consoleStyle.red[1]
 	+consoleStyle.yellowBG[1]
+	+' '
 	+text
 	+'\n';
 }
+
+const sucMessage = (text) => {
+	return consoleStyle.green[0]
+	+text
+	+consoleStyle.green[1]
+	+'\n';
+}
+
+//log the error message with format.
+module.exports.errMessage = errMessage;
+//log the success message witch format.
+module.exports.sucMessage = sucMessage;
