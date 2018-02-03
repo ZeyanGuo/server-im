@@ -8,4 +8,6 @@
 //登录拦截怎么做？
 //列表页能不能缓存？)
 
+
+//start the server.
 const server = require('../src');

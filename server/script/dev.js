@@ -20,9 +20,8 @@ app.use(webpackDevMiddleware(compiler, {
  
 var webpackHotMiddleware = require('webpack-hot-middleware');
 app.use(webpackHotMiddleware(compiler));
-  
- 
-app.get('*', function(req, res) {
+
+app.get('*', (req, res) => {
 
   res.sendFile(inputPath+'/public/index.html'); 
 });
