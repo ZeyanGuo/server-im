@@ -10,7 +10,7 @@ if(env.NODE_ENV === 'DEVLOPMENT'){
 	);
 }
 else if(env.NODE_ENV === 'PRODUCTION'){
-	const proConfig = require('../../config/webpack.config.pro');
+	const proConfig = require('../../config/webpack.config.dev');//暂时使用dev的build进行测试
 	util.execWebpack(proConfig);
 }
 else{

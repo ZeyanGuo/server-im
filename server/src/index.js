@@ -4,10 +4,15 @@ const config = require('../../config/server.config');
 const {sucMessage} = require('../util/util');
 const {createRouter} = require('./router');
 const Server = express();
+const bodyParser = require('body-parser');
+const multer = require('multer'); 
+const cookieParser = require('cookie-parser');
+const cors = require('cors');
+
 
 const allowCrossDomain = (req, res, next) => {
     res.header("Access-Control-Allow-Origin", "http://localhost:8000");  
-    res.header("Access-Control-Allow-Headers", "X-Requested-With");  
+    res.header("Access-Control-Allow-Headers", "X-Requested-With,Content-Type");  
     res.header("Access-Control-Allow-Credentials",true);
     res.header("Access-Control-Allow-Methods","PUT,POST,GET,DELETE,OPTIONS");  
     res.header("X-Powered-By",' 3.2.1')  
@@ -16,6 +21,12 @@ const allowCrossDomain = (req, res, next) => {
 };
 
 Server.use(allowCrossDomain);
+Server.use(bodyParser.json());
+Server.use(cookieParser());
+Server.use(cors({
+    origin: 'http://localhost:8000',
+    credentials: true,
+}));
 //Add the route
 createRouter(Server);
 
