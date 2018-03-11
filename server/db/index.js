@@ -29,9 +29,9 @@ function deletes(db,collections,selector,fn){
 	});
 }
 
-function update(db,collctions,selector,fn){
+function update(db,collections,selector,fn){
 	const collection = db.collection(collections);
-	collections.updateOne(selector[0],selector[1],function(err,result){
+	collection.updateOne(selector[0],selector[1],function(err,result){
 		assert.equal(err,null);
 		fn(result);
 	});

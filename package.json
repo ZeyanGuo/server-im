@@ -14,7 +14,13 @@
   "license": "ISC",
   "dependencies": {
     "assert": "^1.4.1",
-    "express": "^4.16.2"
+    "body-parser": "^1.18.2",
+    "cookie-parser": "^1.4.3",
+    "cors": "^2.8.4",
+    "express": "^4.16.2",
+    "images": "^3.0.1",
+    "mongodb": "^3.0.3",
+    "multer": "^1.3.0"
   },
   "_from": "server-im@0.0.6",
   "_resolved": "http://registry.npm.taobao.org/server-im/download/server-im-0.0.6.tgz",
