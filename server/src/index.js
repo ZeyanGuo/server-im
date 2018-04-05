@@ -20,10 +20,9 @@ const allowCrossDomain = (req, res, next) => {
     res.header("Content-Type", "application/json;charset=utf-8");  
     next();
 };
-
+Server.use(bodyParser.json({ limit:"10000kb"}));
 Server.use('/images',express.static(path.resolve(__dirname,'../../static/images')));
 Server.use(allowCrossDomain);
-Server.use(bodyParser.json());
 Server.use(cookieParser());
 Server.use(cors({
     origin: 'http://localhost:8000',

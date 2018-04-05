@@ -4,8 +4,7 @@
   "description": "The server for server-im",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start":"node ./server/src/index.js"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "bin": {
     "server-im": "./bin/server-im.js"
@@ -19,6 +18,7 @@
     "cookie-parser": "^1.4.3",
     "cors": "^2.8.4",
     "express": "^4.16.2",
+    "express-ws": "^3.0.0",
     "images": "^3.0.1",
     "mongodb": "^3.0.3",
     "multer": "^1.3.0"
@@ -32,6 +32,7 @@
     "babel-preset-es2015": "^6.24.1",
     "babel-preset-latest": "^6.24.1",
     "babel-preset-react": "^6.24.1",
+    "babel-preset-stage-3": "^6.24.1",
     "clean-webpack-plugin": "^0.1.18",
     "css-loader": "^0.28.9",
     "file-loader": "^1.1.6",
@@ -42,6 +43,7 @@
     "style-loader": "^0.20.1",
     "url-loader": "^0.6.2",
     "webpack": "^3.10.0",
-    "webpack-dev-server": "^2.11.1"
+    "webpack-dev-server": "^2.11.1",
+    "webpack-hot-middleware": "^2.21.2"
   }
 }

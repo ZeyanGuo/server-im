@@ -25,7 +25,7 @@ module.exports = {
 						loader:'babel-loader',
 						options:{
 							presets:[
-								'latest',
+								'stage-3',
 								'react'
 							]
 						}

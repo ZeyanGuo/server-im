@@ -452,6 +452,8 @@
 							x:imageRecored.showLeft.replace('px',''),
 							y:imageRecored.showTop.replace('px',''),
 							id:id,
+							containerWidth:370,
+							containerHeight:370,
 							imageHeight:imageRecored.imageHeight,
 							imageWidth:imageRecored.imageWidth
 						}
@@ -461,10 +463,9 @@
 							method:'POST',
 							data:JSON.stringify(postData),
 							success:function(data){
-								console.log(data);
+								window.parent.postMessage(data,'http://localhost:8000');
 							},
 							error:function(err){
-								console.log(err);
 							}
 						})
 						

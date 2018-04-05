@@ -93,7 +93,7 @@ function ajax({url,method,success,error,data}){
 		return error("method方法不支持先支持get,put,post,head,delete,option");
 	method = method.toUpperCase();
 	var xmlRequest = newXmlRequest();
-	xmlRequest.onreadystatechange=stateCheck(xmlRequest,success,error);
+	xmlRequest.onreadystatechange=function(){stateCheck(xmlRequest,success,error)};
 	if(method==="GET"){
 		if(data){
 		url += '?'

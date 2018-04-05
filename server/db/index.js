@@ -4,6 +4,8 @@ const assert = require('assert');
 const URL = "mongodb://localhost:27017";
 const dbName = "IM";
 
+
+
 function find(db,collections,selector,fn){
 	const collection = db.collection(collections);
 
@@ -37,11 +39,21 @@ function update(db,collections,selector,fn){
 	});
 }
 
+function sortFind(db,collections,selector,fn){
+	const collection = db.collection(collections);
+	let result = collection.find().sort(selector[0]).skip(selector[1]).limit(selector[2]);
+	result.toArray(function(err,result){
+		assert.equal(err,null);
+		fn(result);
+	});
+}
+
 methodsTypes = {
 	find:find,
 	add:add,
 	delete:deletes,
-	update:update
+	update:update,
+	sortFind:sortFind
 }
 
 module.exports = function(methods,collections,selector,fn){
