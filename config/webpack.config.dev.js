@@ -7,7 +7,7 @@ const CleanWebpackPlugin = require('clean-webpack-plugin');
 module.exports = {
 	entry:[
 		path.resolve(inputPath,'./src/index.js'),
-		path.resolve(__dirname,'../node_modules/webpack-hot-middleware/client?noInfo=true&reload=true')
+		//path.resolve(__dirname,'../node_modules/webpack-hot-middleware/client?noInfo=true&reload=true')
 		// path.resolve(__dirname,'../node_modules/webpack-dev-server/client')
 	],
 	output:{
@@ -71,7 +71,7 @@ module.exports = {
 			inject:true
 		}),
 		new webpack.NamedModulesPlugin(),
-		new webpack.HotModuleReplacementPlugin()
+		//new webpack.HotModuleReplacementPlugin()
 	],
-	devtool:"source-map"
+	//devtool:"source-map"
 }

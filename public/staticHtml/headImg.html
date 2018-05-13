@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<script src="./myFunction.js"></script>
+	</head>
+	<style>
+		@keyframes page-scale-in{
+			from{transform: scale(0,0);}
+			to{transform: scale(1,1);}
+		}
+		@keyframes page-move-out{
+			from{opacity: 1; transform: translateY(0px); }
+			to{opacity: 0; transform: translateY(-100px);}
+		}
+		.content-main-image-change{
+			transform: scale(1);
+			width: 700px;
+			height: 530px;
+			background: white;
+			position: fixed;
+			left: 5px;
+			top: 5px;
+			border-radius: 5px;
+			box-shadow: 0px 0px 5px 2px gray;
+			box-sizing: border-box;
+			padding: 10px 50px;
+		}
+		#imgInput{
+			width: 0px;
+		}
+		.span-for-imgBtn{
+			font-size: 15px;
+
+		}
+		.imgGetBtn{
+			margin-left: 40px;
+			font-size: 14px;
+			cursor: pointer;
+		}
+		.content-main-image-show-stage{
+			margin-top: 20px;
+			height: 370px;
+			width: 370px;
+			background: rgba(0,0,0,.5);
+			background-size: cover;
+			background-position: center;
+			background-repeat: no-repeat;
+			position: relative;
+			overflow: hidden;
+		}
+		.content-main-image{
+			width: 640px;
+			height: 370px;
+			margin-left: -160px;
+			position: absolute;
+
+		}
+		.content-main-mark{
+			width: 370px;
+			height: 370px;
+			background: rgba(0,0,0,.5);
+			position: absolute;
+		}
+		.content-main-select-border{
+			width: 100%;
+			height: 100%;
+			position: absolute;
+			box-sizing: border-box;
+			border: 1px solid dodgerblue;
+		}
+		.content-main-select{
+
+			background-attachment:fixed ;
+			background-size: 640px 370px;
+			background-position: 260px 240px; 
+			background-repeat: no-repeat;
+			position: absolute;
+			width: 300px;
+			height: 300px;
+			border-radius: 22.5px;
+			left: 35px;
+			top: 35px;
+			cursor: crosshair ;
+		}
+		.point{
+			width: 5px;
+			height: 5px;
+			background: dodgerblue;
+		}
+		.border-x-left{
+			position: absolute;
+			left: -2px;
+			top: calc(50% - 2px);
+			cursor: w-resize;
+		}
+		.border-x-right{
+			position: absolute;
+			right: -2px;
+			top: calc(50% - 2px);
+			cursor: e-resize;
+		}
+		.border-y-top{
+			position: absolute;
+			top: -2px;
+			left: calc(50% - 2px);
+			cursor: n-resize;
+		}
+		.border-y-bottom{
+			position: absolute;
+			bottom: -2px;
+			left: calc(50% - 2px);
+			cursor: s-resize;
+		}
+		.border-left-top{
+			position: absolute;
+			left: -2px;
+			top: -2px;
+			cursor: nw-resize;
+		}
+		.border-left-bottom{
+			position: absolute;
+			left: -2px;
+			bottom: -2px;
+			cursor: sw-resize;
+		}
+		.border-right-bottom{
+			position: absolute;
+			right: -2px;
+			bottom: -2px;
+			cursor: se-resize;
+		}
+		.border-right-top{
+			position: absolute;
+			right: -2px;
+			top: -2px;
+			cursor: ne-resize;
+		}
+		.content-lines-y{
+			position: absolute;
+			box-sizing: border-box;
+			top: 33.3%;
+			border: 1px dashed white;
+			width: 100%;
+			height: 33.3%;
+			border-left: none;
+			border-right: none;
+		}
+		.content-lines-x{
+			position: absolute;
+			box-sizing: border-box;
+			left: 33.3%;
+			border: 1px dashed white;
+			width: 33.3%;
+			height: 100%;
+			border-top: none;
+			border-bottom: none;
+		}
+		.image-tag{
+			color: orange;
+			padding-left: 60px;
+		}
+		.content-main-image-ok{
+			position: absolute;
+			top: 50px;
+			right: 50px;
+			width: 200px;
+			height: 430px;
+
+			text-align: center;
+		}
+		.big-image{
+			display: inline-block;
+			width: 150px;
+			height: 150px;
+			background: ghostwhite;
+			background-repeat:  no-repeat;
+			border-radius: 11.25px;
+		}
+		.middel-image{
+			display: inline-block;
+			width: 100px;
+			height: 100px;
+			background: ghostwhite;
+			background-repeat:  no-repeat;
+			border-radius:7.5px ;
+		}
+		.small-image{
+			display: inline-block;
+			width: 50px;
+			height: 50px;
+			background: ghostwhite;
+			background-repeat:  no-repeat;			
+			border-radius:3.25px ;
+		}
+		.save{
+			font-size: 20px;
+		}	
+		.btn{
+			margin-top: 25px;
+		    padding: 0.3em .3em;
+		    word-spacing: 0.3em;
+		    text-align: center;
+		    outline: none;
+		    font-size: 15px;
+		    color: gray;
+		    line-height: 20px;
+		    border-radius: 5px;
+		    transition: background 0.3s ease-in;
+		    width: 150px;
+		}
+		.hidden{
+			display: none;
+		}
+	</style>
+	<body>
+		<div id = 'changeImageStage' class="content-main-image-change">
+			<div class="content-main-image-head">
+				<!--<form id="imageInfoForm" method="post" enctype="multipart/form-data" action="url">
+					<input id = "imgInput" name = 'image' multiple="multiple" accept="image/gif,image/jpeg,image/png" type="file" value="选择图片" />
+					<input id = "imageWidth" name = 'imageWidth' type="text" value = '' class="hidden" />
+					<input id = "imageHeight" name = 'imageHeight' type="text" value = '' class="hidden" />
+					<input id = 'showLeft' name = 'showLeft' type = "text" value = '' class="hidden" />
+					<input id = 'showTop' name = 'showTop' type = "text" value = '' class="hidden" />
+					
+					<input id = 'width' name = 'width' type = "text" value = '' class="hidden" />
+					<input id = 'height' name = 'height' type = "text" value = '' class="hidden" />
+				</form>-->
+				<input class = "hidden" id = "imgInput" name = 'image' multiple="multiple" accept="image/gif,image/jpeg,image/png" type="file" value="选择图片" />
+				<span class="span-for-imgBtn">请选择头像图片:</span>
+				<button id="selectImage" class="btn imgGetBtn">选择图片</button>
+			</div>
+			<div class="content-main-image-show-stage">
+				<img id='imageShowStage' class="content-main-image" src="" />
+				<div class="content-main-mark"></div>
+				
+				<div id = 'imageShowStageFixed' class="content-main-select">
+					<div class="content-main-select-border"></div>
+					<div id="lines-y" class="content-lines-y"></div>
+					<div id="lines-x" class="content-lines-x"></div>
+					<div id="left-x" class="point border-x-left"></div>
+					<div id="right-x" class="point border-x-right"></div>
+					<div id="top-y" class="point border-y-top"></div>
+					<div id="bottom-y" class="point border-y-bottom"></div>
+					<div id="left-top" class="point border-left-top" ></div>
+					<div id="left-bottom" class="point border-left-bottom"></div>
+					<div id="right-bottom" class="point border-right-bottom"></div>
+					<div id="right-top" class="point border-right-top"></div>
+				</div>
+			</div>
+			<p class="image-tag">请保证图片大小在2M以内</p>
+			<div class="content-main-image-ok">
+				<div id = 'bigImage' class="big-image"></div>
+				<p></p>
+				<div id = 'middelImage' class="middel-image"></div>
+				<p></p>
+				<div id = 'smallImage' class="small-image"></div>
+				<p></p>
+				<button id="saveAndSubmitBtn" class="btn save">保存修改</button>
+			</div>
+		</div>
+	</body>
+	<script>
+		function changeImageStageInit(){
+	
+			var imageRecored = {//图片导入后的相关信息
+				url:null,
+				//此处的width和height所指的是图片截取区域的大小
+				width:300,
+				height:300,
+				showLeft:null,
+				showTop:null,
+				imageWidth:null,
+				imageHeight:null
+			},saveAndSubmitBtn = document.getElementById('saveAndSubmitBtn');
+			
+			
+			saveAndSubmitBtn.M_addEvent('click',saveAndSubmit);
+			//修改头像按钮点击特效
+			function initShowAndHiddenBtn(){
+				var changeImageBtn = document.getElementById('changeImageBtn'),
+					changeImageStage = document.getElementById('changeImageStage'),
+					bodyStage = document.getElementById('body');
+					
+				changeImageBtn.M_addEvent('click',function(){
+					changeImageStage.style = 'animation: page-scale-in .5s ease-in-out forwards;';
+					bodyStage.className = 'blur';
+					changeImageBtn.disabled = true;
+					setTimeout(function(){
+						bodyStage.M_addEvent('click',stageHiddenFunc);
+					},300);
+				});
+				
+				function stageHiddenFunc(){
+					changeImageStage.style = 'animation: page-move-out .5s ease-in-out forwards;';
+					bodyStage.className = '';
+					changeImageBtn.disabled = false;
+					bodyStage.M_removeEvent('click',stageHiddenFunc);
+					//在500ms之后将更改头像框架的位置设置为-400，以免z-index的干扰
+					setTimeout(function(){
+						changeImageStage.style.left = '-800px';
+					},500);
+				}
+			}
+			
+			//页面显示后，初始化图片按钮
+			function initAddImageBtn(){
+				var selectImage = document.getElementById('selectImage'),
+					imgInput = document.getElementById('imgInput'),
+					showImageStage = document.getElementById('imageShowStage'),
+					imageShowStageFixed = document.getElementById('imageShowStageFixed');
+				selectImage.M_addEvent('click',function(){
+					imgInput.click();
+				});
+				imgInput.M_addEvent('change',function(){
+					var imgFile = imgInput.files[0],
+						url = URL.createObjectURL(imgFile);
+					if(imgFile.size>2097152){
+						alert('图片大小过大,不能超过2M');
+						imgInput.value=null;
+						return false;
+					}
+					showImageStage.src = url;
+					imageRecored.url = url;
+					changeImagePosition(url);
+				});
+				
+				//为新导入的图片初始化位置信息
+				function changeImagePosition(url){
+					var image = new Image();
+					image.src = url;
+					image.M_addEvent('load',function(){
+						var width = image.width*(370/image.height),
+							offsetX = (width-370)>0?(-(width-370)/2):((370-width)/2);
+						showImageStage.style.width = width+'px';
+						showImageStage.style.marginLeft = offsetX+'px';
+						imageShowStageFixed.style.backgroundImage = 'url('+url+')';
+						imageShowStageFixed.style.backgroundSize = width+'px 370px';
+						imageShowStageFixed.style.backgroundPosition = (offsetX+55+'px ')+(91+'px');
+						imageRecored.imageWidth = image.width;
+						imageRecored.imageHeight = image.height;
+						imageRecored.showLeft = '35px';
+						imageRecored.showTop = '35px';
+						imageRecored.width = 300;
+						imageRecored.height = 300;
+						showImageChange();
+						initSelectArea();
+					});
+				}
+			
+			}
+			
+			function imageDraggable(){
+				 	//获取相关的八个可拖动点信息
+				var	lineY = document.getElementById('lines-y'),
+					lineX = document.getElementById('lines-x'),
+					leftXPoint = document.getElementById('left-x'),
+					rightXPoint = document.getElementById('right-x'),
+					topYPoint = document.getElementById('top-y'),
+					bottomYPoint = document.getElementById('bottom-y'),
+					leftTopPoint = document.getElementById('left-top'),
+					leftBottomPoint = document.getElementById('left-bottom'),
+					rightBottomPoint = document.getElementById('right-bottom'),
+					rightTopPoint = document.getElementById('right-top');
+					
+				//初始化拖动标签按钮
+				leftXPoint.M_addEvent('mousedown',function(e){
+					var event = e || window.event
+					e.stopPropagation();
+					dragPoint(leftXPoint,'left',imageShowStageFixed,event,imageRecored,showImageChange);
+				});
+				leftTopPoint.M_addEvent('mousedown',function(e){
+					var event = e || window.event
+					e.stopPropagation();
+					dragPoint(leftXPoint,'leftTop',imageShowStageFixed,event,imageRecored,showImageChange);
+				});
+				rightXPoint.M_addEvent('mousedown',function(e){
+					var event = e || window.event
+					e.stopPropagation();
+					dragPoint(leftXPoint,'right',imageShowStageFixed,event,imageRecored,showImageChange);
+				});
+				rightBottomPoint.M_addEvent('mousedown',function(e){
+					var event = e || window.event
+					e.stopPropagation();
+					dragPoint(leftXPoint,'rightBottom',imageShowStageFixed,event,imageRecored,showImageChange);
+				});
+				topYPoint.M_addEvent('mousedown',function(e){
+					var event = e || window.event
+					e.stopPropagation();
+					dragPoint(leftXPoint,'top',imageShowStageFixed,event,imageRecored,showImageChange);
+				});
+				rightTopPoint.M_addEvent('mousedown',function(e){
+					var event = e || window.event
+					e.stopPropagation();
+					dragPoint(leftXPoint,'rightTop',imageShowStageFixed,event,imageRecored,showImageChange);
+				});
+				bottomYPoint.M_addEvent('mousedown',function(e){
+					var event = e || window.event
+					e.stopPropagation();
+					dragPoint(leftXPoint,'bottom',imageShowStageFixed,event,imageRecored,showImageChange);
+				});
+				leftBottomPoint.M_addEvent('mousedown',function(e){
+					var event = e || window.event
+					e.stopPropagation();
+					dragPoint(leftXPoint,'leftBottom',imageShowStageFixed,event,imageRecored,showImageChange);
+				});
+				
+				//初始化整个区域拖动
+				imageShowStageFixed.M_addEvent('mousedown',function(e){
+					var range = {
+						xRange:(370 - imageShowStageFixed.offsetWidth),
+						yRange:(370 - imageShowStageFixed.offsetWidth)
+					}
+					drag(imageShowStageFixed,e,range,imageRecored,showImageChange);
+				});
+				
+			}
+			
+			function showImageChange(){
+				var bigImage = document.getElementById('bigImage'),
+					middelImage = document.getElementById('middelImage'),
+					smallImage = document.getElementById('smallImage');
+				showImage(imageRecored,bigImage,150);
+				showImage(imageRecored,middelImage,100);
+				showImage(imageRecored,smallImage,50);
+			}
+			
+			function initSelectArea(){
+				imageShowStageFixed.style.width = '300px';
+				imageShowStageFixed.style.height = '300px';
+				imageShowStageFixed.style.left = '35px';
+				imageShowStageFixed.style.top = '35px';
+			}
+			
+			
+			//保存修改按钮代码段
+			function saveAndSubmit(){
+				
+				//判断记录的image信息是否存在，如果存在提交相关信息到后台，否则输出提示信息
+				if(imageRecored.url&&imageRecored.width&&imageRecored.height&&imageRecored.imageHeight&&imageRecored.imageWidth&&imageRecored.showLeft&&imageRecored.showTop){
+					
+					console.log(imageRecored)
+					
+					
+				}
+				else{
+					alert('请选择图片作为头像');
+				}
+		//		width:300,
+		//		height:300,
+		//		showLeft:null,
+		//		showTop:null,
+		//		imageWidth:null,
+		//		imageHeight:null
+			}
+			
+			
+			imageDraggable();
+			initAddImageBtn();
+			//initShowAndHiddenBtn();
+		}
+		changeImageStageInit();
+	</script>
+</html>

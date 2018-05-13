@@ -22,12 +22,14 @@ const allowCrossDomain = (req, res, next) => {
 };
 Server.use(bodyParser.json({ limit:"10000kb"}));
 Server.use('/images',express.static(path.resolve(__dirname,'../../static/images')));
+Server.use('/assert',express.static(path.resolve(__dirname,'../../public/')));
 Server.use(allowCrossDomain);
 Server.use(cookieParser());
 Server.use(cors({
     origin: 'http://localhost:8000',
     credentials: true,
 }));
+
 //Add the route
 createRouter(Server);
 

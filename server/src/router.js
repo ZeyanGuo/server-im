@@ -340,6 +340,10 @@ const createRouter = (app) => {
 		
 	});
 	//页面请求根路径时返回主页面
+	app.get(/^\/assert\/.*$/,(req,res)=>{
+		res.header("Content-Type", "text/html");
+		res.sendFile(path.resolve(rootFile,'./public/index.html'));
+	})
 	app.get('/',(req,res)=>{
 		res.sendFile(path.resolve(rootFile,'./public/index.html'));
 	});
