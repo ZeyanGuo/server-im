@@ -2,6 +2,10 @@ const db = require('../../db');
 const ObjectID = require('mongodb').ObjectID; 
 const message = require('./message.js');
 const config = require('../../../config/server.config');
+const fs = require('fs');
+const path = require('path');
+
+
 module.exports.groupChat = (msg,ws,wss) => {
 
 }
@@ -48,6 +52,7 @@ module.exports.createGroupChat = (msg,ws,wss) => {
 								$addToSet:{
 									chatList:{
 										id:result.insertedIds[0].toString(),
+										show:true,
 										unReadMsg:0
 									}
 								}
@@ -72,12 +77,32 @@ module.exports.groupChat = (msg,ws,wss) => {//群聊消息
 	let Token = msg.Token,
 		chatId = msg.chatId,
 		userId = msg.id,
+		msgType = msg.msgType,
+		message;
+		
+
+	if(msgType == 'text'){
 		message = {
 			message:msg.message,
 			timeStamp:new Date().getTime().toString()
-		};
+		}
+	}
+	else if(msgType == 'image'){
+		let imgData = msg.message,
+			base64Data = imgData.replace(/^data:image\/\w+;base64,/, ""),
+			dataBuffer = new Buffer(base64Data, 'base64'),
+			savePath = path.resolve(__dirname,'../../../static/images/image');
+			name = Token;
+		fs.writeFile(savePath+"/"+name+'.png',dataBuffer,(err) => {
+			
+		});
+		message = {
+			message:'http://'+config.host+':'+config.port+'/images/image/'+name+'.png',
+			timeStamp:new Date().getTime().toString()
+		}
+	}
 
-	const addMessagePromise = (chatId,message,ws,Token) => {
+	const addMessagePromise = (chatId,message,ws,Token,msgType) => {
 		return new Promise((resolve,reject)=>{
 			db(
 				'add',
@@ -85,7 +110,8 @@ module.exports.groupChat = (msg,ws,wss) => {//群聊消息
 				{
 					userId:userId,
 					msg:message.message,
-					time:message.timeStamp
+					time:message.timeStamp,
+					type:msgType
 				},
 				(result)=>{
 					if(result.insertedCount === 1){
@@ -95,7 +121,8 @@ module.exports.groupChat = (msg,ws,wss) => {//群聊消息
 							errString:'none',
 							chatId:chatId,
 							code:0,
-							Token:Token
+							Token:Token,
+							msgId:result.insertedIds[0].toString()
 						}));
 						resolve(result.insertedIds[0].toString());
 					}
@@ -108,8 +135,17 @@ module.exports.groupChat = (msg,ws,wss) => {//群聊消息
 		})
 	}
 
-	const addLastMessageToChat = (chatId,message,msgId) => {
+	const addLastMessageToChat = (chatId,message,msgId,msgType) => {
+		
 		return new Promise((resolve,reject)=>{
+			let newMessage;
+			if(msgType == 'text'){
+				newMessage = message.message
+			}
+			else if(msgType == 'image'){
+				newMessage = '[图片]'
+			}
+
 			db(
 				'update',
 				'chat',
@@ -117,7 +153,7 @@ module.exports.groupChat = (msg,ws,wss) => {//群聊消息
 					{_id:ObjectID(chatId)},
 					{
 						$set:{
-							lastMessage:message.message,
+							lastMessage:newMessage,
 							lastTimeStamp:message.timeStamp
 						}
 					}
@@ -135,7 +171,7 @@ module.exports.groupChat = (msg,ws,wss) => {//群聊消息
 		})
 	}
 
-	const sendWsMessageToAll = (chatId,message,Token,msgId,userId,wss) => {
+	const sendWsMessageToAll = (chatId,message,Token,msgId,userId,wss,msgType) => {
 		return new Promise((resolve,reject)=>{
 			db(
 				'find',
@@ -146,6 +182,7 @@ module.exports.groupChat = (msg,ws,wss) => {//群聊消息
 						let ids = result[0].users;
 						ids.map((id) => {
 							if(id != userId && !!wss[id] && wss[id].readyState==1){
+								
 								wss[id].send(JSON.stringify({
 									Token:Token,
 									chatId:chatId,
@@ -157,9 +194,44 @@ module.exports.groupChat = (msg,ws,wss) => {//群聊消息
 										msg:message.message,
 										time:message.timeStamp,
 										userId:userId,
-										_id:msgId
+										_id:msgId,
+										type:msgType
 									}
 								}));
+								db(
+									'update',
+									'user',
+									[
+										{
+											_id:ObjectID(id),
+											'chatList.id':chatId
+										},
+										{
+											$set:{
+												"chatList.$.show":true
+											}
+										}
+									],
+									()=>{}
+								);
+								db(//增加未读取消息
+									'update',
+									'user',
+									[
+										{
+											_id:ObjectID(id),
+											'chatList.id':chatId
+										},
+										{
+											$inc:{
+												"chatList.$.unReadMsg":1
+											}
+										}
+									],
+									(result)=>{
+										
+									}
+								)
 							}
 						});
 						resolve();
@@ -173,12 +245,12 @@ module.exports.groupChat = (msg,ws,wss) => {//群聊消息
 		})
 	}
 
-	addMessagePromise(chatId,message,ws,Token)//添加message到对应的chatId信息中
+	addMessagePromise(chatId,message,ws,Token,msgType)//添加message到对应的chatId信息中
 	.then((msgId)=>{
-		return addLastMessageToChat(chatId,message,msgId);//更新chat表中对应的最新信息和最新时间
+		return addLastMessageToChat(chatId,message,msgId,msgType);//更新chat表中对应的最新信息和最新时间
 	})
 	.then((msgId)=>{
-		return sendWsMessageToAll(chatId,message,Token,msgId,userId,wss);//向所有的用户广播消息
+		return sendWsMessageToAll(chatId,message,Token,msgId,userId,wss,msgType);//向所有的用户广播消息
 	})
 	.then(()=>{
 

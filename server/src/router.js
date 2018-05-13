@@ -9,7 +9,7 @@ const webSocket = require('express-ws');
 const singleChat = require('./methods/singleChat.js');
 const groupChat = require('./methods/groupChat.js');
 const messageOperation = require('./methods/message.js');
-
+const chatManagement = require('./methods/chatManagement.js');
 //记录所有登录的用户id信息
 const LoginUsers = [];
 const wss = {};
@@ -251,6 +251,55 @@ const createRouter = (app) => {
 
 						}
 					);
+
+					db(
+						'find',
+						'user',
+						{
+							_id:ObjectID(msg.id),
+						},
+						(result)=>{
+							if(!!result[0].chatMap[msg.friendId]){//如果存在chatId
+								let chatId = result[0].chatMap[msg.friendId];
+								db(
+									'update',
+									'user',
+									[
+										{
+											_id:ObjectID(msg.id),
+											'chatList.id':chatId
+										},
+										{
+											$set:{
+												"chatList.$.show":false,
+												"chatList.$.unReadMsg":0
+											}
+										}
+									],
+									()=>{}
+								)
+								db(
+									'update',
+									'user',
+									[
+										{
+											_id:ObjectID(msg.friendId),
+											'chatList.id':chatId
+										},
+										{
+											$set:{
+												"chatList.$.show":false,
+												"chatList.$.unReadMsg":0
+											}
+										}
+									],
+									()=>{}
+								)
+							}
+						}
+					)
+				
+						
 					if(wss[msg.friendId]&&friendExist&&wss[msg.friendId].readyState==1){
 						wss[msg.friendId].send(JSON.stringify({
 							type:'deleteFriend',
@@ -279,6 +328,9 @@ const createRouter = (app) => {
 				} break;
 				case 'createGroupChat':{//用于创建群聊，ids:群聊所有人的id，chatName:群聊的名字
 					groupChat.createGroupChat(msg,ws,wss);
+				} break;
+				case 'deleteChat':{//删除用户的聊天 chatIds:聊天的id，userid:需要删除的用户id
+					chatManagement.deleteChat(msg,ws,wss);
 				} break;
 				default:{
 					ws.send('please send the currect type.');
@@ -805,7 +857,7 @@ const searchDataList = (resultInfo,callback) => {
 		listSendedRequestTemp = [],listSendedRequestResult = [],
 		listChatTemp = [],listChatResult = [],
 		listFriendTemp = [],listFriendResult = [],
-		unReadMsg = {}, chatImgGroup = 'http://'+config.host+':'+config.port+'/images/chat.png';
+		unReadMsg = {},chatShow = {}, chatImgGroup = 'http://'+config.host+':'+config.port+'/images/chat.png';
 	for(let i = 0; i < resultInfo[0].receivedRequestList.length; i++){
 		listRequestTemp[i] = ObjectID(resultInfo[0].receivedRequestList[i]);
 	}
@@ -815,6 +867,7 @@ const searchDataList = (resultInfo,callback) => {
 	for(let i = 0; i < resultInfo[0].chatList.length; i++){
 		listChatTemp[i] = ObjectID(resultInfo[0].chatList[i].id);	
 		unReadMsg[resultInfo[0].chatList[i].id] = resultInfo[0].chatList[i].unReadMsg;
+		chatShow[resultInfo[0].chatList[i].id] = resultInfo[0].chatList[i].show;
 	}
 	for(let i = 0; i < resultInfo[0].friendList.length; i++){
 		listFriendTemp[i] = ObjectID(resultInfo[0].friendList[i]);	
@@ -895,6 +948,7 @@ const searchDataList = (resultInfo,callback) => {
 										users:obj.users,
 										lastMessage:obj.lastMessage,
 										unReadMsg:unReadMsg[obj._id],
+										show:chatShow[obj._id],
 										lastTimeStamp:obj.lastTimeStamp
 									});
 								}
@@ -909,6 +963,7 @@ const searchDataList = (resultInfo,callback) => {
 								chatImg:'http://'+config.host+':'+config.port+'/images/chat.png',
 								lastMessage:obj.lastMessage,
 								unReadMsg:unReadMsg[obj._id],
+								show:chatShow[obj._id],
 								lastTimeStamp:obj.lastTimeStamp
 							})
 						}

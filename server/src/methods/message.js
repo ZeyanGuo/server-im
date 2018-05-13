@@ -51,6 +51,8 @@ module.exports.checkMessage = (msg) => {
 
 
 	if(code == 0){//消息未读取
+		
+	}else{//消息已读
 		db(
 			'update',
 			'user',
@@ -61,7 +63,7 @@ module.exports.checkMessage = (msg) => {
 				},
 				{
 					$inc:{
-						"chatList.$.unReadMsg":1
+						"chatList.$.unReadMsg":-1
 					}
 				}
 			],
@@ -69,7 +71,6 @@ module.exports.checkMessage = (msg) => {
 				
 			}
 		)
-	}else{//消息已读暂时不做操作
 	}
 }
 
@@ -101,7 +102,8 @@ module.exports.getHistoryRecord = (msg,ws) => {
 					code:code,
 					userId:obj.userId,
 					msg:obj.msg,
-					time:obj.time
+					time:obj.time,
+					type:obj.type
 				});
 			})
 			moreMsg = result.length == 20 ?true:false;
@@ -111,6 +113,7 @@ module.exports.getHistoryRecord = (msg,ws) => {
 				errString:'none',
 				result:data,
 				count:result.length,
+				chatId:chatId,
 				moreMsg:moreMsg//表示是否还有更多消息
 			}));
 			clearTheUnReadMsg(id,chatId);

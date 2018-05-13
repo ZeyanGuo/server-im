@@ -1,6 +1,9 @@
 const db = require('../../db');
 const ObjectID = require('mongodb').ObjectID; 
 const message = require('./message.js');
+const config = require('../../../config/server.config');
+const fs = require('fs');
+const path = require('path');
 
 const getUserInfoById = (id,callback) => {
 	return new Promise((resolve,reject)=>{
@@ -49,13 +52,64 @@ const sendErrMessage = (info,ws,Token) => {
 	})
 }
 
-const broadCastMessage = (ws,wss,id,userData,friendData) => {
+const broadCastMessage = (ws,wss,userId,id,userData,friendData) => {
 	userData.type = "singleChat";
 	friendData.type = 'singleChat';
 	ws.send(JSON.stringify(userData));
+	db(
+		'update',
+		'user',
+		[
+			{
+				_id:ObjectID(userId),
+				'chatList.id':friendData.chatId
+			},
+			{
+				$set:{
+					"chatList.$.show":true
+				}
+			}
+		],
+		()=>{}
+	)
+	db(//增加未读取消息
+		'update',
+		'user',
+		[
+			{
+				_id:ObjectID(id),
+				'chatList.id':friendData.chatId
+			},
+			{
+				$inc:{
+					"chatList.$.unReadMsg":1
+				}
+			}
+		],
+		(result)=>{
+			
+		}
+	)
 	if(!!wss[id]&&wss[id].readyState==1){
 		wss[id].send(JSON.stringify(friendData));
+		db(
+			'update',
+			'user',
+			[
+				{
+					_id:ObjectID(id),
+					'chatList.id':friendData.chatId
+				},
+				{
+					$set:{
+						"chatList.$.show":true
+					}
+				}
+			],
+			()=>{}
+		)
 	}
+
 	else{
 		message.checkMessage({
 			id:id,
@@ -65,65 +119,136 @@ const broadCastMessage = (ws,wss,id,userData,friendData) => {
 	}
 }
 
-const hasChatIdMethod = (baseInfo,userId,message,chatId,Token) => {
-	let data = {
-		userId:userId,
-		msg:message,
-		time:new Date().getTime().toString()
+const hasChatIdMethod = (baseInfo,userId,message,chatId,Token,msgType) => {
+	if(msgType == 'text'){
+		let data = {
+			userId:userId,
+			msg:message,
+			time:new Date().getTime().toString(),
+			type:'text'
+		}
+		//添加消息到message表，并且发送回馈
+		return addMessageToChat(chatId,data,(result,resolve,reject)=>{
+			if(result.insertedCount === 1){//插入数据成功
+				broadCastMessage(
+					baseInfo.ws,
+					baseInfo.wss,
+					userId,
+					baseInfo.friendId,
+					{
+						status:'ok',
+						errString:'none',
+						code:0, //表示本人发送请求后回首到的消息
+						chatId:chatId,
+						Token:Token,
+						msgId:data._id
+					},
+					{
+						status:'ok',
+						errString:'none',
+						result:data,
+						code:1, //表示给他人发送的消息
+						chatId:chatId,
+						Token:Token
+					}
+				)
+				storeChatToChatList(//存储到chatList并且发送显示聊天List
+					userId,
+					baseInfo.friendId,
+					baseInfo.ws,
+					baseInfo.wss,
+					chatId,
+					message,
+					msgType
+				)
+				resolve(null);
+			}
+			else{
+				reject('message send failed(data can\'t insert to '+chatId+')');
+			}
+			
+		})
 	}
-	//添加消息到message表，并且发送回馈
-	return addMessageToChat(chatId,data,(result,resolve,reject)=>{
-		if(result.insertedCount === 1){//插入数据成功
-			broadCastMessage(
-				baseInfo.ws,
-				baseInfo.wss,
-				baseInfo.friendId,
-				{
-					status:'ok',
-					errString:'none',
-					code:0, //表示本人发送请求后回首到的消息
-					chatId:chatId,
-					Token:Token,
-					msgId:data._id
-				},
-				{
-					status:'ok',
-					errString:'none',
-					result:data,
-					code:1, //表示给他人发送的消息
-					chatId:chatId,
-					Token:Token
-				}
-			)
-			storeChatToChatList(//存储到chatList并且发送显示聊天List
-				userId,
-				baseInfo.friendId,
-				baseInfo.ws,
-				baseInfo.wss,
-				chatId,
-				message
-			)
-			resolve(null);
-		}
-		else{
-			reject('message send failed(data can\'t insert to '+chatId+')');
-		}
+	else if(msgType == 'image'){
 		
-	})
+		let imgData = message,
+			base64Data = imgData.replace(/^data:image\/\w+;base64,/, ""),
+			dataBuffer = new Buffer(base64Data, 'base64'),
+			savePath = path.resolve(__dirname,'../../../static/images/image');
+			name = Token;
+		
+		fs.writeFile(savePath+"/"+name+'.png',dataBuffer,(err) => {
+			
+			let data = {
+				userId:userId,
+				msg:'http://'+config.host+':'+config.port+'/images/image/'+name+'.png',
+				time:new Date().getTime().toString(),
+				type:'image'
+			}
+			return addMessageToChat(chatId,data,(result,resolve,reject)=>{
+				if(result.insertedCount === 1){//插入数据成功
+					broadCastMessage(
+						baseInfo.ws,
+						baseInfo.wss,
+						userId,
+						baseInfo.friendId,
+						{
+							status:'ok',
+							errString:'none',
+							code:0, //表示本人发送请求后回首到的消息
+							chatId:chatId,
+							Token:Token,
+							msgId:data._id
+						},
+						{
+							status:'ok',
+							errString:'none',
+							result:data,
+							code:1, //表示给他人发送的消息
+							chatId:chatId,
+							Token:Token
+						}
+					)
+					storeChatToChatList(//存储到chatList并且发送显示聊天List
+						userId,
+						baseInfo.friendId,
+						baseInfo.ws,
+						baseInfo.wss,
+						chatId,
+						message,
+						msgType
+					)
+					resolve(null);
+				}
+				else{
+					reject('message send failed(data can\'t insert to '+chatId+')');
+				}
+				
+			})
+		})
+	}
+	
 }
 
-const storeChatToChatList = (userId,friendId,ws,wss,chatId,message) => {//储存聊天信息到chatList
+const storeChatToChatList = (userId,friendId,ws,wss,chatId,message,msgType) => {//储存聊天信息到chatList
+	let storeMessage;
+	if(msgType == 'text'){
+		storeMessage = message;
+	}
+	else{
+		storeMessage = '[图片]';
+	}
 	let sendDataToUser = {
 			type:'createSingleChat',
 			friendId:friendId,
 			chatId:chatId,
-			lastMessage:message
+			lastMessage:storeMessage
 		},
 		sendDataToFriend = {
 			type:'createSingleChat',
 			friendId:userId,
 			chatId:chatId,
-			lastMessage:message
+			lastMessage:storeMessage
 		};
 	let ids = [],users = [];
 	ids.push(ObjectID(userId));
@@ -169,6 +294,7 @@ const storeChatToChatList = (userId,friendId,ws,wss,chatId,message) => {//储存
 					$addToSet:{
 						chatList:{
 							id:chatId,
+							show:true,
 							unReadMsg:0
 						}
 					}
@@ -296,7 +422,14 @@ module.exports.startSingleChat = (msg,ws) => {
 module.exports.singleChat = (msg,ws,wss) => {
 	let friendId = msg.friendId,
 		userId = msg.id,
+		message,
+		msgType = msg.msgType;
+	if(msgType == 'text'){
 		message = msg.message;
+	}
+	else if(msgType == 'image'){
+		message = '[图片]'
+	}
 
 	getUserInfoById(userId,(result,resolve,reject)=>{
 		let chatMap = result[0].chatMap;
@@ -327,7 +460,7 @@ module.exports.singleChat = (msg,ws,wss) => {
 
 				}
 			)
-			return hasChatIdMethod({ws:ws,wss:wss,friendId:friendId},userId,message,chatId,msg.Token);
+			return hasChatIdMethod({ws:ws,wss:wss,friendId:friendId},userId,msg.message,chatId,msg.Token,msgType);
 		}
 		else{
 			//创建chatId
@@ -358,7 +491,7 @@ module.exports.singleChat = (msg,ws,wss) => {
 				let updateString = {[updateIndex]:chatId.toString()};
 				let updateIndexFriend = 'chatMap.'+userId;
 				let updateStringFriend = {[updateIndexFriend]:chatId.toString()};
-				hasChatIdMethod({ws:ws,wss:wss,friendId:friendId},userId,message,chatId,msg.Token);
+				hasChatIdMethod({ws:ws,wss:wss,friendId:friendId},userId,msg.message,chatId,msg.Token,msgType);
 				db(
 					'update',
 					'user',
