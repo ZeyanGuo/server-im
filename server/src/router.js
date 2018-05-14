@@ -584,7 +584,7 @@ const createRouter = (app) => {
 						if(resultInfo.result.ok === 1){//图片修改操作成功
 							result.status='ok';
 							result.errString='none';
-							result.URL = 'http://'+config.host+':'+config.port+'/images/'+id+date+'.png';
+							result.URL = 'http://119.23.226.248:80/images/'+id+date+'.png';
 						}
 						else{
 							result.status='err';
