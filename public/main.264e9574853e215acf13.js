@@ -31128,6 +31128,8 @@ if(false) {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__index_css__ = __webpack_require__("./src/containers/main/components/HeadImgUpdatePopup/index.css");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__index_css___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1__index_css__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__config_js__ = __webpack_require__("./src/config.js");
+
 
 
 class HeadImgUpdatePopup extends __WEBPACK_IMPORTED_MODULE_0_react___default.a.Component {
@@ -31141,7 +31143,7 @@ class HeadImgUpdatePopup extends __WEBPACK_IMPORTED_MODULE_0_react___default.a.C
 		document.body.removeEventListener('click', this.props.hideChangeHeadImg);
 	}
 	render() {
-		return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement('iframe', { className: 'IM-img-update', style: { animation: "page-scale-in 0.5s ease-in-out forwards" }, src: 'http://localhost:9000/staticHtml/headImg' });
+		return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement('iframe', { className: 'IM-img-update', style: { animation: "page-scale-in 0.5s ease-in-out forwards" }, src: __WEBPACK_IMPORTED_MODULE_2__config_js__["a" /* default */].local + "/staticHtml/headImg" });
 	}
 }
 
