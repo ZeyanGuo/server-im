@@ -861,7 +861,7 @@ const searchDataList = (resultInfo,callback) => {
 		listSendedRequestTemp = [],listSendedRequestResult = [],
 		listChatTemp = [],listChatResult = [],
 		listFriendTemp = [],listFriendResult = [],
-		unReadMsg = {},chatShow = {}, chatImgGroup = 'http://'+config.host+':'+config.port+'/images/chat.png';
+		unReadMsg = {},chatShow = {}, chatImgGroup = 'http://119.23.226.248:80/images/chat.png';
 	for(let i = 0; i < resultInfo[0].receivedRequestList.length; i++){
 		listRequestTemp[i] = ObjectID(resultInfo[0].receivedRequestList[i]);
 	}
@@ -964,7 +964,7 @@ const searchDataList = (resultInfo,callback) => {
 								users:obj.users,
 								chatId:obj._id,
 								chatName:obj.name,
-								chatImg:'http://'+config.host+':'+config.port+'/images/chat.png',
+								chatImg:'http://119.23.226.248:80/images/chat.png',
 								lastMessage:obj.lastMessage,
 								unReadMsg:unReadMsg[obj._id],
 								show:chatShow[obj._id],
