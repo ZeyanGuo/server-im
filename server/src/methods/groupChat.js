@@ -98,7 +98,7 @@ module.exports.groupChat = (msg,ws,wss) => {//群聊消息
 			
 		});
 		message = {
-			message:'http://'+config.host+':'+config.port+'/images/image/'+name+'.'+imageType,
+			message:'http://119.23.226.248:80/images/image/'+name+'.'+imageType,
 			timeStamp:new Date().getTime().toString()
 		}
 	}
