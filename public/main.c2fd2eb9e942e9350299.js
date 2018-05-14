@@ -27244,10 +27244,11 @@ class PromptDialog extends __WEBPACK_IMPORTED_MODULE_0_react___default.a.Compone
 
 "use strict";
 const config = {
-	// local:'http://10.69.102.73:9000',
-	// ws:'ws://10.69.102.73:9000',
-	local: 'http://localhost:9000',
-	ws: 'ws://localhost:9000'
+	local: 'http://119.23.226.248:80',
+	ws: 'ws://119.23.226.248:9000'
+	// local:'http://localhost:9000',
+	// ws:'ws://localhost:9000',
+
 };
 
 /* harmony default export */ __webpack_exports__["a"] = (config);
