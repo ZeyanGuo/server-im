@@ -576,7 +576,7 @@ const createRouter = (app) => {
 						{_id:ObjectID(id)},
 						{							
 							$set:{
-								headImg:'http://'+config.host+':'+config.port+'/images/'+id+date+'.png',							
+								headImg:'http://119.23.226.248:80/images/'+id+date+'.png',							
 							}
 						}
 					],

@@ -27245,7 +27245,7 @@ class PromptDialog extends __WEBPACK_IMPORTED_MODULE_0_react___default.a.Compone
 "use strict";
 const config = {
 	local: 'http://119.23.226.248:80',
-	ws: 'ws://119.23.226.248:9000'
+	ws: 'ws://119.23.226.248:80'
 	// local:'http://localhost:9000',
 	// ws:'ws://localhost:9000',
 

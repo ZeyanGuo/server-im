@@ -181,7 +181,7 @@ const hasChatIdMethod = (baseInfo,userId,message,chatId,Token,msgType) => {
 			
 			let data = {
 				userId:userId,
-				msg:'http://'+config.host+':'+config.port+'/images/image/'+name+'.png',
+				msg:'http://119.23.226.248:80/images/image/'+name+'.png',
 				time:new Date().getTime().toString(),
 				type:'image'
 			}

@@ -40,7 +40,7 @@ module.exports.createGroupChat = (msg,ws,wss) => {
 					type:'createGroupChat',
 					result:data
 				}
-				sendData.result.chatImg = 'http://'+config.host+':'+config.port+'/images/chat.png';
+				sendData.result.chatImg = 'http://119.23.226.248:80/images/chat.png';
 				ids.map((id)=>{
 
 					db(
