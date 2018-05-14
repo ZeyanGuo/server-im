@@ -172,16 +172,17 @@ const hasChatIdMethod = (baseInfo,userId,message,chatId,Token,msgType) => {
 	else if(msgType == 'image'){
 		
 		let imgData = message,
+			imageType = /^data:image\/(\w+);base64,/.exec(imgData)[1],
 			base64Data = imgData.replace(/^data:image\/\w+;base64,/, ""),
 			dataBuffer = new Buffer(base64Data, 'base64'),
 			savePath = path.resolve(__dirname,'../../../static/images/image');
 			name = Token;
 		
-		fs.writeFile(savePath+"/"+name+'.png',dataBuffer,(err) => {
+		fs.writeFile(savePath+"/"+name+'.'+imageType,dataBuffer,(err) => {
 			
 			let data = {
 				userId:userId,
-				msg:'http://119.23.226.248:80/images/image/'+name+'.png',
+				msg:'http://119.23.226.248:80/images/image/'+name+'.'+imageType,
 				time:new Date().getTime().toString(),
 				type:'image'
 			}

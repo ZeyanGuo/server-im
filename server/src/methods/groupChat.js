@@ -89,15 +89,16 @@ module.exports.groupChat = (msg,ws,wss) => {//群聊消息
 	}
 	else if(msgType == 'image'){
 		let imgData = msg.message,
+			imageType = /^data:image\/(\w+);base64,/.exec(imgData)[1],
 			base64Data = imgData.replace(/^data:image\/\w+;base64,/, ""),
 			dataBuffer = new Buffer(base64Data, 'base64'),
 			savePath = path.resolve(__dirname,'../../../static/images/image');
 			name = Token;
-		fs.writeFile(savePath+"/"+name+'.png',dataBuffer,(err) => {
+		fs.writeFile(savePath+"/"+name+'.'+imageType,dataBuffer,(err) => {
 			
 		});
 		message = {
-			message:'http://'+config.host+':'+config.port+'/images/image/'+name+'.png',
+			message:'http://'+config.host+':'+config.port+'/images/image/'+name+'.'+imageType,
 			timeStamp:new Date().getTime().toString()
 		}
 	}
