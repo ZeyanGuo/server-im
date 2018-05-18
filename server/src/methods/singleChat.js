@@ -187,8 +187,8 @@ const hasChatIdMethod = (baseInfo,userId,message,chatId,Token,msgType) => {
 				type:'image'
 			}
 			return addMessageToChat(chatId,data,(result,resolve,reject)=>{
-				setTimeout(function(){
-					if(result.insertedCount === 1){//插入数据成功
+				if(result.insertedCount === 1){//插入数据成功
+					setTimeout(function(){
 						broadCastMessage(
 							baseInfo.ws,
 							baseInfo.wss,
@@ -211,8 +211,7 @@ const hasChatIdMethod = (baseInfo,userId,message,chatId,Token,msgType) => {
 								Token:Token
 							}
 						)
-					}
-				},500);
+					},500)
 					storeChatToChatList(//存储到chatList并且发送显示聊天List
 						userId,
 						baseInfo.friendId,
