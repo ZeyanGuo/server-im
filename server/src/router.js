@@ -23,6 +23,19 @@ const createRouter = (app) => {
 			msg = JSON.parse(msg);
 			switch(msg.type){
 				case 'login':{
+					// 新增代码 删除原始LoginUsers.push
+					for(var i = 0; i < LoginUsers.length; i++){
+					
+						if(LoginUsers[i] == msg.id){
+							LoginUsers.splice(i,1);
+							wss[msg.id] = null;
+							break;
+						}
+						
+					}
+					//登录记录
+					LoginUsers.push(msg.id);
+					// 新增代码
 					wss[msg.id] = ws;
 					ws.send(JSON.stringify({
 						type:'login',
@@ -517,8 +530,8 @@ const createRouter = (app) => {
 									}
 								}
 							}
-							//登录记录
-							LoginUsers.push(resultInfo[0]._id);
+							
+							
 							//设置Cookie
 							res.cookie('US', resultInfo[0]._id,{
 						        maxAge: 5000000,

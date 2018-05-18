@@ -187,29 +187,32 @@ const hasChatIdMethod = (baseInfo,userId,message,chatId,Token,msgType) => {
 				type:'image'
 			}
 			return addMessageToChat(chatId,data,(result,resolve,reject)=>{
-				if(result.insertedCount === 1){//插入数据成功
-					broadCastMessage(
-						baseInfo.ws,
-						baseInfo.wss,
-						userId,
-						baseInfo.friendId,
-						{
-							status:'ok',
-							errString:'none',
-							code:0, //表示本人发送请求后回首到的消息
-							chatId:chatId,
-							Token:Token,
-							msgId:data._id
-						},
-						{
-							status:'ok',
-							errString:'none',
-							result:data,
-							code:1, //表示给他人发送的消息
-							chatId:chatId,
-							Token:Token
-						}
-					)
+				setTimeout(function(){
+					if(result.insertedCount === 1){//插入数据成功
+						broadCastMessage(
+							baseInfo.ws,
+							baseInfo.wss,
+							userId,
+							baseInfo.friendId,
+							{
+								status:'ok',
+								errString:'none',
+								code:0, //表示本人发送请求后回首到的消息
+								chatId:chatId,
+								Token:Token,
+								msgId:data._id
+							},
+							{
+								status:'ok',
+								errString:'none',
+								result:data,
+								code:1, //表示给他人发送的消息
+								chatId:chatId,
+								Token:Token
+							}
+						)
+					}
+				},500);
 					storeChatToChatList(//存储到chatList并且发送显示聊天List
 						userId,
 						baseInfo.friendId,
