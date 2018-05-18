@@ -188,6 +188,16 @@ const hasChatIdMethod = (baseInfo,userId,message,chatId,Token,msgType) => {
 			}
 			return addMessageToChat(chatId,data,(result,resolve,reject)=>{
 				if(result.insertedCount === 1){//插入数据成功
+
+					storeChatToChatList(//存储到chatList并且发送显示聊天List
+						userId,
+						baseInfo.friendId,
+						baseInfo.ws,
+						baseInfo.wss,
+						chatId,
+						message,
+						msgType
+					);
 					setTimeout(function(){
 						broadCastMessage(
 							baseInfo.ws,
@@ -211,16 +221,7 @@ const hasChatIdMethod = (baseInfo,userId,message,chatId,Token,msgType) => {
 								Token:Token
 							}
 						)
-					},500)
-					storeChatToChatList(//存储到chatList并且发送显示聊天List
-						userId,
-						baseInfo.friendId,
-						baseInfo.ws,
-						baseInfo.wss,
-						chatId,
-						message,
-						msgType
-					)
+					},800)
 					resolve(null);
 				}
 				else{
